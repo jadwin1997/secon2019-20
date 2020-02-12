@@ -6,16 +6,20 @@
  by Scott Fitzgerald
  http://www.arduino.cc/en/Tutorial/Sweep
 */
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
-#include <Servo.h>
+Adafruit_PWMServoDriver servoShield = Adafruit_PWMServoDriver();
 
-Servo myservo;  // create servo object to control a servo
-String inString;
-// twelve servo objects can be created on most boards
+double degreesToPwm(int degree);
 
-int pos = 0;    // variable to store the servo position
-int restingPos = 60;
-int pressingPos = 150;
+int calibrationPos = 90;    // variable to store the servo position
+int restingPos = 80;
+int pressingDeta = 30;
+
+double calibrationPos = degreesToPwm(90);
+double restingPos = degreesToPwm(80);
+double leftPressingPos = degreesToPwm(80)
 
 void setup() {
   myservo.attach(8);  // attaches the servo on pin 9 to the servo object
@@ -23,10 +27,6 @@ void setup() {
   Serial.begin(9600);
   Serial.println("yooo");
 }
-
-
-
-
 
 void loop() {
 //  Controls based on input-------
@@ -57,8 +57,10 @@ void loop() {
 
 }
 
-
-
+double degreesToPwm(int degree)
+{
+    return (725 / 180 * degree + 275);
+}
 
 void pressButton(){
   myservo.write(pressingPos);
