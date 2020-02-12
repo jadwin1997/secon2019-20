@@ -14,8 +14,8 @@ double degreesToPwm(int degree);
 double calibrationPos = degreesToPwm(90);
 
 // Positions used for the actual pressing of buttons
-int restAngle = 100;
-int angleDelta = 15;
+int restAngle = 90;
+int angleDelta = 10;
 double restingPos = degreesToPwm(restAngle);
 double leftPressingPos = degreesToPwm(restAngle + angleDelta);
 double rightPressingPos = degreesToPwm(restAngle - angleDelta);
@@ -38,8 +38,9 @@ void loop() {
   // Trigger if switch is pressed (Low)
   if (digitalRead(switchPin))
   {
-    // Only using servo 0 for now
-    pressButton(0);
+    // Only using servo 4 and 5 for now
+    pressButton(4);
+    pressButton(5);
   }
 }
 
@@ -68,8 +69,11 @@ void pressButton(int servoNumber)
 
 bool isLeftServo(int servoNumber)
 {
-  // TODO Set up the conditionals to determin if left or right servo motor
-  // if (servoNumber ) 
+  // Found the specific motors
+  if (servoNumber == 9 || servoNumber == 8 || servoNumber == 6 || servoNumber == 5 || servoNumber == 2) 
+  {
+    return false;
+  }
 
-  return false;
+  return true;
 }
