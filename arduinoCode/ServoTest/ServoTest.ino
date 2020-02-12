@@ -1,60 +1,46 @@
-/* Sweep
- by BARRAGAN <http://barraganstudio.com>
- This example code is in the public domain.
 
- modified 8 Nov 2013
- by Scott Fitzgerald
- http://www.arduino.cc/en/Tutorial/Sweep
-*/
+// This file is for running and calibrating the servos for Msstate Secon 2020
+// Its sole purpose is to run the servos on a Adafruit PWM Servo Shield
+
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
 Adafruit_PWMServoDriver servoShield = Adafruit_PWMServoDriver();
 
+// Prototype for converter
 double degreesToPwm(int degree);
 
-int calibrationPos = 90;    // variable to store the servo position
-int restingPos = 80;
-int pressingDeta = 30;
-
+// Position used when attaching the horns to the servos
 double calibrationPos = degreesToPwm(90);
-double restingPos = degreesToPwm(80);
-double leftPressingPos = degreesToPwm(80)
 
-void setup() {
-  myservo.attach(8);  // attaches the servo on pin 9 to the servo object
-//  myservo.write(0);
+// Positions used for the actual pressing of buttons
+int restAngle = 100;
+int angleDelta = 15;
+double restingPos = degreesToPwm(restAngle);
+double leftPressingPos = degreesToPwm(restAngle + angleDelta);
+double rightPressingPos = degreesToPwm(restAngle - angleDelta);
+
+int switchPin = 12;
+
+void setup()
+{
   Serial.begin(9600);
-  Serial.println("yooo");
+  Serial.println("Servo Calibration and Testing");
+
+  pinMode(switchPin, INPUT_PULLUP);
+
+  // Begin I2C communication with servo shield
+  servoShield.begin();
+  servoShield.setPWMFreq(100);
 }
 
 void loop() {
-//  Controls based on input-------
-  while (Serial.available() > 0) {
-    int inChar = Serial.read();
-    if (isDigit(inChar)) {
-      // convert the incoming byte to a char and add it to the string:
-      inString += (char)inChar;
-    }
-    // if you get a newline, print the string, then the string's value:
-    if (inChar == '-') {
-      pos = inString.toInt();
-      Serial.print("Finished int: ");
-      Serial.println(pos);
-      inString = "";
-      myservo.write(pos);
-    }
+  // Trigger if switch is pressed (Low)
+  if (digitalRead(switchPin))
+  {
+    // Only using servo 0 for now
+    pressButton(0);
   }
-
-//Swaying back and forth------
-//myservo.write(0);
-//delay(800);
-//myservo.write(180);
-//delay(1000);
-
-//  delay(3000);
-//  pressButton();
-
 }
 
 double degreesToPwm(int degree)
@@ -62,10 +48,28 @@ double degreesToPwm(int degree)
     return (725 / 180 * degree + 275);
 }
 
-void pressButton(){
-  myservo.write(pressingPos);
-  delay(500);
-  myservo.write(restingPos);
+void pressButton(int servoNumber)
+{
+  // Extend to pressing position
+  if (isLeftServo(servoNumber))
+  {
+    servoShield.setPWM(servoNumber, 0, leftPressingPos);
+  }
+  else
+  {
+    servoShield.setPWM(servoNumber, 0, rightPressingPos);
+  }
+
+  delay(1000);
+
+  // Retract to resting position
+  servoShield.setPWM(servoNumber, 0, restingPos);
 }
 
+bool isLeftServo(int servoNumber)
+{
+  // TODO Set up the conditionals to determin if left or right servo motor
+  // if (servoNumber ) 
 
+  return false;
+}
